@@ -1,5 +1,5 @@
 import db from '$db';
-import { env } from '$env/dynamic/private';
+import { init } from '$db';
 import { building } from '$app/environment';
 import { redirect } from '@sveltejs/kit';
 import { initOptions } from '$lib/server/options.js'
@@ -8,7 +8,8 @@ import { initOptions } from '$lib/server/options.js'
 if (!building) {
     (async () => {
 
-        await initOptions();
+        init();              // Init DB
+        await initOptions(); // Init Options
         
     })();
 }

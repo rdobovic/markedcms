@@ -39,7 +39,6 @@ export const actions = {
         try {
             parsed = Options.parse(formData);
         } catch (err) {
-            console.log('Validation errors =>', err, err.flatten().fieldErrors);
             return fail(400, {
                 data: formData,
                 errors: err.flatten().fieldErrors,

@@ -6,7 +6,6 @@
 
     export let data;
     export let form;
-    console.log("DEL USER >>", data.user);
 </script>
 
 <Form>

@@ -9,7 +9,6 @@
 
     $: {
         activeRoot = menu.find(itm => $page.url.pathname.startsWith(itm.path));
-        console.log(activeRoot);
     }
 </script>
 

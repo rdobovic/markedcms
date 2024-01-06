@@ -1,9 +1,9 @@
 import bcrypt from 'bcrypt';
-import { BOOLEAN, Model } from 'sequelize';
+import { Model } from 'sequelize';
 
-import { env } from '$env/dynamic/private';
+import { PASSWORD_SALT_ROUNDS } from '$env/static/private';
 
-const passwordSaltRounds = Number(env.PASSWORD_SALT_ROUNDS) || 10;
+const passwordSaltRounds = Number(PASSWORD_SALT_ROUNDS) || 10;
 
 export default (sequelize, DataTypes) => {
 	class User extends Model {

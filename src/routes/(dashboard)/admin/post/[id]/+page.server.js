@@ -136,7 +136,6 @@ export const actions = {
             parsed = Post.parse(formData);
             
         } catch (err) {
-            console.log('VALIDATION ERROR >> ', err.flatten());
             // If ZOD validation failed return errors
             return fail(400, {
                 data: formData,
@@ -193,8 +192,6 @@ export const actions = {
         // shares parent's category
         if (!parsed.parentId)
             parsed.parentId = parsed.categoryId;
-
-        console.log("DB ERRORS >>", errors);
 
         // If any of above errors occured, return them
         if (Object.keys(errors).length > 0)

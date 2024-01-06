@@ -4,8 +4,6 @@ import options from '$lib/server/options.js';
 
 export async function load({ params, url }) {
 
-    console.log(url.pathname);
-
     let content;
 
     if (url.pathname === '/') {

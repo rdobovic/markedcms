@@ -5,9 +5,10 @@ import setupUser from './user.js';
 import setupOption from './option.js';
 import setupContent from './content.js';
 
-import * as env from '$env/static/private';
+import { env } from '$env/dynamic/private';
+import { NODE_ENV } from '$env/static/private';
 
-const configAll = {
+const configAll = (environment) => ({
     
     development: {
         dialect: 'mysql',
@@ -31,6 +32,7 @@ const configAll = {
 
     production: {
         dialect: 'mysql',
+        logging: false,
         
         host: env.PROD_DB_HOST,
         port: env.PROD_DB_PORT,
@@ -38,18 +40,29 @@ const configAll = {
         username: env.PROD_DB_USERNAME,
         password: env.PROD_DB_PASSWORD,
     },
+
+}[environment]);
+
+const db = {};
+
+export function init() {
+    db.Sequelize = Sequelize;
+
+    db.sequelize = new Sequelize(
+        configAll(NODE_ENV).database, 
+        configAll(NODE_ENV).username, 
+        configAll(NODE_ENV).password,
+        configAll(NODE_ENV)
+    );
+
+    db.User = setupUser(db.sequelize, Sequelize.DataTypes);
+    db.Option = setupOption(db.sequelize, Sequelize.DataTypes);
+    db.Content = setupContent(db.sequelize, Sequelize.DataTypes);
+
+    db.User.associate(db);
+    db.Option.associate(db);
+    db.Content.associate(db);
 }
-
-const config = configAll[env.NODE_ENV];
-
-const sequelize = new Sequelize(config.database, config.username, config.password, config);
-
-// Initilize all models
-const User = setupUser(sequelize, Sequelize.DataTypes);
-const Option = setupOption(sequelize, Sequelize.DataTypes);
-const Content = setupContent(sequelize, Sequelize.DataTypes);
 
 // Export all models
-export default {
-    Sequelize, sequelize, User, Option, Content
-}
+export default db;

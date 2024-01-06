@@ -1,8 +1,6 @@
 import z from 'zod';
 import db from '$db';
 
-const Op = db.Sequelize.Op;
-
 const headers = {
     'Content-Type': 'application/json',
 }
@@ -17,6 +15,7 @@ const errorResponse = (errors, status = 400) => {
 // /api/content-structure
 
 export async function PUT({ request }) {
+    const Op = db.Sequelize.Op;
     const commands = await request.json();
 
     const Commands = z.object({

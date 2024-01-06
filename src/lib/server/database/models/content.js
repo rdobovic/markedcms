@@ -72,8 +72,7 @@ export default (sequelize, DataTypes) => {
 			// If this model is updated (not created)
 			if (oldPath) {
 				const treeDiff = this.treeLevel - oldTreeLevel;
-
-				console.log('TRANSACION: ', transaction);
+				
 				// Update path for all children
 				await Content.update({
 					path: sequelize.literal(`CONCAT(${sequelize.escape(this.path)}, SUBSTR(path, ${oldPath.length + 1}))`),

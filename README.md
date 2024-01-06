@@ -1,22 +1,20 @@
-# create-svelte
+# MarkedCMS
 
-Everything you need to build a Svelte project, powered by [`create-svelte`](https://github.com/sveltejs/kit/tree/master/packages/create-svelte).
+MarkedCMS is simple web application for building websites written in Markdown
+markup language. It allows you to create posts and categories which can be nested.
+Hierarchy created by nesting posts and categories is than used to generate sidebar
+menu, you ofcourse have full control over which posts and categories will or will
+not be displayed in the menu.
 
-## Creating a project
+MarkedCMS is great for building simple websites quickly since it's design is
+not highly customizable and thus really easy to use.
 
-If you're seeing this, you've probably already done this step. Congrats!
+`TODO: Write proper README`
 
-```bash
-# create a new project in the current directory
-npm create svelte@latest
-
-# create a new project in my-app
-npm create svelte@latest my-app
-```
 
 ## Developing
 
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
+Once you've downloaded a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
 
 ```bash
 npm run dev
@@ -27,7 +25,7 @@ npm run dev -- --open
 
 ## Building
 
-To create a production version of your app:
+To create a production version of the app:
 
 ```bash
 npm run build
@@ -35,4 +33,4 @@ npm run build
 
 You can preview the production build with `npm run preview`.
 
-> To deploy your app, you may need to install an [adapter](https://kit.svelte.dev/docs/adapters) for your target environment.
+To deploy your app, you may need to install an [adapter](https://kit.svelte.dev/docs/adapters) for your target environment.

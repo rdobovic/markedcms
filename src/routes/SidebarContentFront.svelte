@@ -14,7 +14,7 @@
 
 <div>
     {#if menu.length == 0}
-        <p class="font-bold">
+        <p class="font-bold my-4">
             This website is empty<br>
             nothing to display :)
         </p>

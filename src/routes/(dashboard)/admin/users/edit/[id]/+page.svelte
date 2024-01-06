@@ -24,7 +24,7 @@
             type="text"
             disabled={true}
             name="username"
-            value={data.username}
+            value={data.user.username}
         >Username</FormInput>
         <FormInput
             type="text"

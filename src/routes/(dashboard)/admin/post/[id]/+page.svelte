@@ -51,6 +51,8 @@
         postBodyB = old('bodyB');
         parent = old('parentId', null);
         postType = old('postType', 'single');
+        
+        useCustomSlug();
     }
 </script>
 

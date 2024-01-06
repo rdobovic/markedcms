@@ -42,6 +42,8 @@
         slug = old('slug');
         hasPage = old('hasPage');
         categoryPage = old('bodyA');
+
+        useCustomSlug();
     }
 </script>
 

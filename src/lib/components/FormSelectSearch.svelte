@@ -65,7 +65,7 @@
         setTimeout(() => {
             opened = false;
             searchValue = selected.name;
-        }, 100);
+        }, 500);
     }
 
     const handleInputChange = () => {

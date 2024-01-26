@@ -13,7 +13,7 @@
     }
 </script>
 
-<div class="min-h-screen flex flex-col relative w-screen">
+<div class="min-h-screen flex flex-col relative w-dvw">
     <header class="flex h-16 px-5 gap-3 bg-gray-400 justify-between text-black sticky top-0 z-40">
         <div class="flex items-center gap-6">
             <button class="flex gap-2 flex-col md:hidden" on:click={handleSidebar}>

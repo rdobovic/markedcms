@@ -37,7 +37,7 @@
         // due to the focus out event
         setTimeout(() => {
             opened = false;
-        }, 100);
+        }, 500);
     }
 
     const setSelected = (val) => async () => {

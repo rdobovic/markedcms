@@ -7,43 +7,35 @@
     import FormSelectSearch from '$lib/components/FormSelectSearch.svelte';
     import FormCheckbox from '$lib/components/FormCheckbox.svelte';
 
-    import { onMount } from 'svelte';
-
     import titleToSlug from '$lib/helpers/titleToSlug.js';
-    import getOldFunction from '$lib/helpers/getOldFunction.js';
+    import { formStore } from '$lib/stores/formStore.js';
 
     export let data;
     export let form;
 
     let customSlug = false;
-    let title, slug, hasPage, categoryPage;
+    const formData = formStore({ name: 'category-form' });
 
-    $: old = getOldFunction(data?.category, form?.data);
-
-    $: {
-        old = old;
-        populateForm();
-    }
+    $: formData.setErrors(form?.errors ?? {});
+    $: formData.setValues({
+        hasPage: false,
+        authorId: data.userId,
+        display: true,
+        
+        ...(data?.category ?? {}),
+        ...(form?.data     ?? {}),
+    });
 
     const titleChange = () => {
         if (customSlug) return;
-        slug = titleToSlug(title);
+        formData.setValue('slug', titleToSlug($formData.values.title));
     }
 
     const useCustomSlug = () => {
-        if (slug == '')
+        if ($formData.values.slug == '')
             customSlug = false;
         else
             customSlug = true;
-    }
-
-    const populateForm = async () => {
-        title = old('title');
-        slug = old('slug');
-        hasPage = old('hasPage');
-        categoryPage = old('bodyA');
-
-        useCustomSlug();
     }
 </script>
 
@@ -51,7 +43,7 @@
     { data.action == 'create' ? 'Create new category' : 'Update category' }
 </h1>
 
-<Form>
+<Form store={formData}>
     <FormSection
         title="Category options"
         submit="Save category"
@@ -59,54 +51,43 @@
         <FormInput
             type="text"
             name="title"
-            errors={form?.errors?.title}
-            bind:value={title}
             on:input={titleChange}
         >Title</FormInput>
 
         <FormInput
             type="text"
             name="slug"
-            errors={form?.errors?.slug}
-            bind:value={slug}
             on:input={useCustomSlug}
             on:focusout={titleChange}
         >URL slug</FormInput>
 
         <FormCheckbox
             name="hasPage"
-            bind:value={hasPage}
         >Has page</FormCheckbox>
 
         <FormCheckbox
             name="displayPosts"
-            value={old('displayPosts', true)}
         >Display posts</FormCheckbox>
 
         <FormCheckbox
             name="display"
-            value={old('display', true)}
         >Display in menu</FormCheckbox>
 
         <FormSelect
             name="authorId"
             options={data.authors}
-            value={old('authorId', data.userId)}
         >Author</FormSelect>
 
         <FormSelectSearch
             name="parentId"
             options={data.categories}
-            value={old('parentId')}
         >Parent category</FormSelectSearch>
     </FormSection>
 
-    {#if hasPage}
+    {#if $formData.values.hasPage}
         <FormText 
-            title="Category page" 
-            bind:value={categoryPage}
+            title="Category page"
             name="bodyA"
-            errors={form?.errors?.bodyA}
         ></FormText>
     {/if}
 </Form>

@@ -31,6 +31,7 @@
 
     {#if activeRoot && activeRoot.children}
         <hr class="my-3 border-gray-400" />
+        <h2 class="font-bold text-xl w-full text-left pb-3">{activeRoot.title}</h2>
         {#each activeRoot.children as child (child.id)}
             <SidebarItemDropdown menu={child} />
         {/each}

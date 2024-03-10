@@ -9,7 +9,11 @@
 </script>
 
 <h1 class="text-3xl font-bold mb-3">Welcome {data.userDisplayName}</h1>
-<p class="mb-6">This is your admin dashboard, use it to shape your website</p>
+<p class="mb-0">This is your admin dashboard, use it to shape your website</p>
+<p class="text-red-600 mb-6">
+    MarkedCMS is still in <b>development</b> and can be unstable, report any issues 
+    <b><a target="_blank" href="https://github.com/rdobovic/markedcms/issues">in it's GitHub repository</a></b>
+</p>
 
 <h2 class="text-xl font-bold mb-2">Website statistics</h2>
 <p class="mb-6">Table below will show you how many posts and categories are created on this website</p>

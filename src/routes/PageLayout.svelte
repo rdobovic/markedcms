@@ -1,10 +1,10 @@
 <script>
     import Sidebar from './Sidebar.svelte';
 
-    export let title;
-    export let footer;
-    export let username;
-    export let sidebarTitle;
+    export let title = '';
+    export let footer = '';
+    export let username = '';
+    export let sidebarTitle = '';
 
     let sidebar = false;
 

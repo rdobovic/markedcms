@@ -8,51 +8,40 @@
     import FormCheckbox from '$lib/components/FormCheckbox.svelte';
 
     import titleToSlug from '$lib/helpers/titleToSlug.js';
-    import getOldFunction from '$lib/helpers/getOldFunction.js';
+    import { formStore } from '$lib/stores/formStore.js';
 
     export let data;
     export let form;
 
     let customSlug = false;
-    let title, slug, postBodyA, postBodyB, parent, postType;
 
-    $: old = getOldFunction(data?.post, form?.data);
+    const formData = formStore({ name: 'post-form' });
 
-    $: {
-        old = old;
-        populateForm();
-    }
+    $: formData.setErrors(form?.errors ?? {});
 
-    const postTypes = [
+    $: formData.setValues({
+        subType: 'single',
+        parentId: null,
+
+        ...(data?.post ?? {}),
+        ...(form?.data ?? {}),
+    });
+
+    const subTypes = [
         { name: 'Single body', value: 'single' },
-        { name: 'Split body', value: 'split' },
+        { name: 'Split body',  value: 'split'  },
     ];
-
-    const setPostType = (typeData) => {
-        postType = typeData.detail.value;
-    }
 
     const titleChange = () => {
         if (customSlug) return;
-        slug = titleToSlug(title);
+        formData.setValue('slug', titleToSlug($formData.values.title));
     }
 
     const useCustomSlug = () => {
-        if (slug == '')
+        if ($formData.values.slug == '')
             customSlug = false;
         else
             customSlug = true;
-    }
-
-    const populateForm = async () => {
-        title = old('title');
-        slug = old('slug');
-        postBodyA = old('bodyA');
-        postBodyB = old('bodyB');
-        parent = old('parentId', null);
-        postType = old('postType', 'single');
-        
-        useCustomSlug();
     }
 </script>
 
@@ -60,7 +49,9 @@
     { data.action == 'create' ? 'Create new post' : 'Update post' }
 </h1>
 
-<Form>
+{JSON.stringify($formData.errors)}
+
+<Form store={formData}>
     <FormSection
         title="Post options"
         submit="Save post"
@@ -68,77 +59,47 @@
         <FormInput
             type="text"
             name="title"
-            errors={form?.errors?.title}
-            bind:value={title}
             on:input={titleChange}
         >Title</FormInput>
 
         <FormInput
             type="text"
             name="slug"
-            errors={form?.errors?.slug}
-            bind:value={slug}
             on:input={useCustomSlug}
             on:focusout={titleChange}
         >URL slug</FormInput>
 
         <FormSelect 
-            value={old('postType', 'single')}
-            name="postType"
-            options={postTypes}
-            on:change={setPostType}
+            name="subType"
+            options={subTypes}
         >Body type</FormSelect>
 
-        <FormCheckbox
-            name="displayPosts"
-            value={old('displayPosts', true)}
-        >Display posts</FormCheckbox>
-
-        <FormCheckbox
-            name="display"
-            value={old('display')}
-        >Display in menu</FormCheckbox>
+        <FormCheckbox name="displayPosts">Display posts</FormCheckbox>
+        <FormCheckbox name="display">Display in menu</FormCheckbox>
 
         <FormSelect
             name="authorId" 
             options={data.authors}
-            value={old('authorId', data.userId)}
         >Author</FormSelect>
 
         <FormSelectSearch 
             name="categoryId" 
             options={data.categories}
-            value={old('categoryId')}
-            disabled={parent != 0}
+            disabled={!!$formData.values.parentId}
         >Categories</FormSelectSearch>
 
         <FormSelectSearch
             name="parentId"
             options={data.posts}
-            bind:value={parent}
             disabled={data?.post?.hasChildren}
         >Parent post</FormSelectSearch>
     </FormSection>
-
-    {#if postType === 'single'}
-        <FormText 
-            title="Post body" 
-            bind:value={postBodyA}
-            name="bodyA"
-            errors={form?.errors?.bodyA}
-        ></FormText>
+    
+    {#if $formData.values.subType === 'single'}
+        <FormText name="bodyA" title="Post body"></FormText>
     {:else}
-        <FormText 
-            title="Post header" 
-            bind:value={postBodyA} 
-            name="bodyA"
-            errors={form?.errors?.bodyA}
-        ></FormText>
-        <FormText 
-            title="Post body" 
-            bind:value={postBodyB} 
-            name="bodyB"
-        ></FormText>
+        <FormText name="bodyA" title="Post header"></FormText>
+        <FormText name="bodyB" title="Post body"></FormText>
     {/if}
 </Form>
 

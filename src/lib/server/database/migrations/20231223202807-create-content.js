@@ -4,6 +4,11 @@
 
 module.exports = {
 	
+	/**
+	 * Create new content table, this table is used to store posts and
+	 * categories created by the user, which is basically all the content
+	 * on the site
+	 */
 	async up(queryInterface, Sequelize) {
 		await queryInterface.createTable('content', {
 			id: {
@@ -82,6 +87,9 @@ module.exports = {
 		});
 	},
 
+	/**
+	 * Drop the content table
+	 */
 	async down(queryInterface, Sequelize) {
 		await queryInterface.dropTable('content');
 	}

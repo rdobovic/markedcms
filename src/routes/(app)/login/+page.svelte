@@ -5,25 +5,25 @@
     import FormSection from '$lib/components/FormSection.svelte';
     import FormCheckbox from '$lib/components/FormCheckbox.svelte';
 
-    export let form;
-    let password = '';
+    import { formStore } from '$lib/stores/formStore.js';
 
-    const handleSubmit = () => {
-        password = '';
-    }
+    export let form;
+
+    const formData = formStore({ name: 'login-form' });
+
+    $: formData.setErrors(form?.errors ?? {});
+    $: formData.setValues(form?.data ?? {});
 </script>
 
-<Form method="POST" action="" on:submit={handleSubmit}>
-    <FormSection title="Login" error={form?.error} submit="Login">
+<Form store={formData}>
+    <FormSection title="Login" submit="Login" name="global">
         <FormInput 
             type="text" 
             name="username" 
-            value={form?.username}
         >Username</FormInput>
         <FormInput 
-            type="password" 
+            type="password"
             name="password"
-            bind:value={password}
         >Password</FormInput>
         <FormCheckbox
             name="remember"

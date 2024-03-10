@@ -43,15 +43,17 @@ export const actions = {
         if (user.id === locals.user.id)
             return fail(400, {
                 data: formData,
-                errors: { globalError: 'You cannot delete yourself' }
+                errors: { global: ['You cannot delete yourself'] }
             });
 
         const leaveToUser = await db.User.findByPk(formData.leaveTo);
-        if (!leaveToUser)
+        if (!leaveToUser) {
+            console.log("LEAVE TO ERROR");
             return fail(400, {
                 data: formData,
-                errors: { leaveTo: 'You must leave it to someone' }
+                errors: { leaveTo: ['You must leave it to someone'] }
             });
+        }
 
         await db.Content.update({ authorId: leaveToUser.id }, {
             where: {

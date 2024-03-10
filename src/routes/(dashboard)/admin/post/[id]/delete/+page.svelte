@@ -3,12 +3,18 @@
     import FormSection from '$lib/components/FormSection.svelte';
     import Button from '$lib/components/Button.svelte';
 
+    import { formStore } from '$lib/stores/formStore.js';
+
     export let data;
     export let form;
+
+    const formData = formStore({ name: 'post-delete-form' });
+    
+    $: formData.setErrors(form?.errors ?? {});
 </script>
 
-<Form>
-    <FormSection title="Delete post" error={form?.error}>
+<Form store={formData}>
+    <FormSection title="Delete post" name="global">
         <p>You are about to delete post <b>{data.post.title}</b></p>
         <p>Are you sure you want to delete it ?</p>
         <div slot="buttons" class="flex w-full gap-2">

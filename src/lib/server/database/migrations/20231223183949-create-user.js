@@ -4,6 +4,11 @@
 
 module.exports = {
 
+	/**
+	 * Create new users table, this table is used to store list of all
+	 * admin user accounts. Those accounts are used to access admin panel
+	 * and edit the site content.
+	 */
 	async up(queryInterface, Sequelize) {
 		await queryInterface.createTable('users', {
 			id: {

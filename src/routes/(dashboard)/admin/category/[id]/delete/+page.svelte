@@ -3,12 +3,18 @@
     import FormSection from '$lib/components/FormSection.svelte';
     import Button from '$lib/components/Button.svelte';
 
+    import { formStore } from '$lib/stores/formStore.js';
+
     export let data;
     export let form;
+
+    const formData = formStore({ name: 'category-delete-form' });
+    
+    $: formData.setErrors(form?.errors ?? {});
 </script>
 
-<Form>
-    <FormSection title="Delete category" error={form?.error}>
+<Form store={formData}>
+    <FormSection title="Delete category" name="global">
         <p>You are about to delete category <b>{data.category.title}</b></p>
         <p>Are you sure you want to delete it ?</p>
         <div slot="buttons" class="flex w-full gap-2">

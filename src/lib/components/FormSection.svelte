@@ -1,6 +1,8 @@
 <script>
     import Button from "./Button.svelte";
+    import FormError from "./FormError.svelte";
 
+    export let name = '';  // Used for error display
     export let title = '';
     export let error = '';
     export let submit = '';
@@ -12,7 +14,10 @@
     {/if}
 
     {#if error}
-        <p class="text-red-700">{error}</p>
+        <p class="text-red-600">{error}</p>
+    {/if}
+    {#if name}
+        <FormError {name} small={false} />
     {/if}
 
     <div class="flex flex-col gap-1 max-w-xl w-full">

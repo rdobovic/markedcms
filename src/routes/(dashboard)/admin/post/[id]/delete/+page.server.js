@@ -32,7 +32,7 @@ export const actions = {
 
         if (await db.Content.findOne({ where: { parentId: post.id } }))
             return fail(422, {
-                error: 'You cannot delete the post which has children, delete all the children first.'
+                errors: { global: ['You cannot delete the post which has children, delete all the children first.'] }
             });
 
         await post.destroy();

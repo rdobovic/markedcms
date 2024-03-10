@@ -1,5 +1,4 @@
 import db from '$db';
-import { writable } from 'svelte/store';
 
 export class Options {
     async init() {

@@ -1,14 +1,25 @@
 <script>
     import { getContext } from "svelte";
+    import { FORM_CONTEXT_KEY } from '$lib/stores/formStore.js';
     export let name;
-    export let value = false;
 
     let inputKey = 0;
+    const formStore = getContext(FORM_CONTEXT_KEY);
     const subscribeToFormSubmit = getContext('formSubmit');
+
+    $: if (typeof $formStore.values[name] != 'boolean') {
+        formStore.setValue(name,
+            [true, 'on', 'true', 'yes'].includes($formStore.values[name])
+        );
+    }
 
     subscribeToFormSubmit(() => {
         ++inputKey;
     });
+
+    const handleChange = (event) => {
+        formStore.setValue(name, event.target.checked);
+    }
 </script>
 
 <div class="flex justify-center items-center">
@@ -26,7 +37,8 @@
                     type="checkbox"
                     id="checkbox-id-{name}"
                     class="sr-only peer hidden"
-                    bind:checked={value}
+                    on:change={handleChange}
+                    checked={$formStore.values[name]}
                 >
             {/key}
             <span class="

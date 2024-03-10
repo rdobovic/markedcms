@@ -4,12 +4,19 @@
     import FormSelect from '$lib/components/FormSelect.svelte';
     import Button from '$lib/components/Button.svelte';
 
+    import { formStore } from '$lib/stores/formStore.js';
+
     export let data;
     export let form;
+
+    const formData = formStore({ name: 'user-delete-form' });
+
+    $: formData.setErrors(form?.errors ?? {});
+    $: formData.setValues(form?.data ?? {});
 </script>
 
-<Form>
-    <FormSection title="Delete user" error={form?.error}>
+<Form store={formData}>
+    <FormSection title="Delete user" name="global">
         <p class="mb-4">
             You are about to delete user 
             <b>{data.user.username} ({data.user.displayName})</b>, 
@@ -19,7 +26,6 @@
         <FormSelect
             name="leaveTo"
             options={data.users}
-            error={form?.errors?.leaveTo}
         >Leave content to</FormSelect>
         <div slot="buttons" class="flex w-full gap-2">
             <Button 

@@ -22,16 +22,19 @@ export const actions = {
 
         if (!username || !password)
             return fail(400, {
-                username,
-                error: 'You must specify both username and password',
+                data: { username, remember },
+                errors: { 
+                    username: !username ? ['Username cannot be empty'] : [],
+                    password: !password ? ['Password cannot be empty'] : [],
+                },
             });
 
         const user = await db.User.findOne({ where: { username } });
 
         if (!user || !(await user.authenticate(password)))
             return fail(403, {
-                username,
-                error: 'Invalid username or password'
+                data: { username, remember },
+                errors: { global: ['Invalid username or password'] }
             });
 
         const token = generateToken();

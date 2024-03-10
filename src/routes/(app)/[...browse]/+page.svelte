@@ -12,7 +12,7 @@
         const res = post.children.map(
             (c) => ({ 
                 url: c.path,
-                text: (c.postType === 'single') ? c.bodyBHtml : c.bodyAHtml,
+                text: (c.subType === 'single') ? c.bodyBHtml : c.bodyAHtml,
             })
         );
         return res;
@@ -30,7 +30,7 @@
     <div class="flex flex-col gap-8">
         {#if data.content.displayPosts}
             {#each data.children as post}
-                {#if post.postType === 'single'}
+                {#if post.subType === 'single'}
                     <Post 
                         text={post.bodyBHtml} 
                         url={post.path}
@@ -49,7 +49,7 @@
 {/if}
 
 {#if data.content.type === 'post'}
-    {#if data.content.postType === 'single'}
+    {#if data.content.subType === 'single'}
         <Markdown html={data.content.bodyAHtml} />
     {:else}
         <Markdown html={data.content.bodyAHtml} class="mb-8" />

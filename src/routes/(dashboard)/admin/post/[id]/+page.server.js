@@ -102,7 +102,7 @@ export const actions = {
                 .max(1023, { message: 'URL slug must be less than 1023 characters' })
                 .trim()
                 .transform(sl => sl.toLowerCase()),
-            postType: z
+            subType: z
                 .enum([ 'single', 'split' ], { message: 'Allowed post types are "single" and "split"' }),
             display: z
                 .string()
@@ -153,7 +153,7 @@ export const actions = {
                 id: parsed.parentId,
                 type: 'post',
                 parentType: {
-                    [db.Sequelize.Op.in]: ['category', null]
+                    [db.Sequelize.Op.or]: ['category', null]
                 },
             }
         });
@@ -171,6 +171,8 @@ export const actions = {
                 }
             }
         });
+
+        console.log("PARENT ID >> ", parsed.parentId, parent);
 
         // Check that post and parent id are not equal
         if (parsed.parentId && post && parsed.parentId === post.id)

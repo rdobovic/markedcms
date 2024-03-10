@@ -7,170 +7,212 @@ import Sequelize from 'sequelize';
 import htmlExcerp from '$lib/helpers/htmlExcerp';
 
 export default (sequelize, DataTypes) => {
-	class Content extends Model {
-		/**
-		 * Helper method for defining associations.
-		 * This method is not a part of Sequelize lifecycle.
-		 * The `models/index` file will call this method automatically.
-		 */
-		static associate(models) {
-			models.Content.belongsTo(models.User, {
-				foreignKey: 'authorId'
-			});
-			models.Content.hasMany(models.Content, {
-				foreignKey: 'parentId'
-			});
-			models.Content.belongsTo(models.Content, {
-				foreignKey: 'parentId'
-			});
-		}
+    class Content extends Model {
 
-		static async findAllHierarchy(options) {
-			const instances = await this.findAll(options);
+        constructor(...options) {
+            super(...options);
 
-			const idMapping = instances.reduce((acc, el, i) => {
-				acc[el.id] = i;
-				return acc;
-			}, {});
+            
+        }
 
-			const root = [];
-			instances.forEach(el => {
+        /**
+         * Helper method for defining associations.
+         * This method is not a part of Sequelize lifecycle.
+         * The `models/index` file will call this method automatically.
+         */
+        static associate(models) {
+            models.Content.belongsTo(models.User, {
+                foreignKey: 'authorId'
+            });
+            models.Content.hasMany(models.Content, {
+                foreignKey: 'parentId'
+            });
+            models.Content.belongsTo(models.Content, {
+                foreignKey: 'parentId'
+            });
+        }
 
-				if (el.parentId === (options.treeRoot ?? null)) {
-					root.push(el);
-					return;
-				}
+        /**
+         * Version of findAll model function used to retrive content objects
+         * in tree structure. Structure is defined by parentId fields in the database
+         */
+        static async findAllHierarchy(options) {
+            const instances = await this.findAll(options);
 
-				const parent = instances[idMapping[el.parentId]];
-				if (!parent) return;
-				
-				parent.children = [...(parent.children || []), el];
-			});
+            const idMapping = instances.reduce((acc, el, i) => {
+                acc[el.id] = i;
+                return acc;
+            }, {});
 
-			return root;
-		}
+            const root = [];
+            instances.forEach(el => {
 
-		async setParent(transaction, parentId = this.parentId) {
-			const oldPath = this.path;
-			const oldTreeLevel = this.treeLevel;
+                if (el.parentId === (options.treeRoot ?? null)) {
+                    root.push(el);
+                    return;
+                }
 
-			if (parentId) {
-				const parent = await Content.findByPk(parentId, { transaction: transaction });
+                const parent = instances[idMapping[el.parentId]];
+                if (!parent) return;
+                
+                parent.children = [...(parent.children || []), el];
+            });
 
-				this.parentId = parent.id;
-				this.treeLevel = parent.treeLevel + 1;
-				this.parentType = parent.type;
-				this.path = `${parent.path}/${this.slug}`;
+            return root;
+        }
 
-			} else {
-				this.parentId = null;
-				this.treeLevel = 0;
-				this.parentType = null;
-				this.path = `/${this.slug}`;
-			}
+        /**
+         * Internal function used to calculate values of fields like tree level
+         * and content url before new values are inserted into database
+         */
+        async setParent(transaction, parentId = this.parentId) {
+            // Store current path and tree level
+            const oldPath = this.path;
+            const oldTreeLevel = this.treeLevel;
 
-			// If this model is updated (not created)
-			if (oldPath) {
-				const treeDiff = this.treeLevel - oldTreeLevel;
-				
-				// Update path for all children
-				await Content.update({
-					path: sequelize.literal(`CONCAT(${sequelize.escape(this.path)}, SUBSTR(path, ${oldPath.length + 1}))`),
-					treeLevel: sequelize.literal(`treeLevel ${ treeDiff < 0 ? '-' : '+' } ${sequelize.escape(treeDiff)}`),
-				},{
-					hooks: false,
-					transaction: transaction,
-					where: {
-						path: {
-							[Sequelize.Op.startsWith]: oldPath,
-						}
-					}
-				});
-			}
-		}
+            // If parent is specified append slug to it's path
+            if (parentId) {
+                const parent = await Content.findByPk(parentId, { transaction: transaction });
 
-		parseBodies() {
-			this.bodyAHtml = this.bodyA ? parse(this.bodyA) : null;
-			this.bodyBHtml = this.bodyB ? parse(this.bodyB) : null;
+                this.parentId = parent.id;
+                this.treeLevel = parent.treeLevel + 1;
+                this.parentType = parent.type;
+                this.path = `${parent.path}/${this.slug}`;
 
-			if (this.postType === 'single') {
-				this.bodyBHtml = htmlExcerp(
-					this.bodyAHtml, 
-					(Number(env.POST_EXCERP_LENGTH) || 200)
-				);
-			}
-		}
-	}
-	Content.init({
-		type: {
-			allowNull: false,
-			type: DataTypes.STRING
-		},
+            } else {
+                this.parentId = null;
+                this.treeLevel = 0;
+                this.parentType = null;
+                this.path = `/${this.slug}`;
+            }
 
-		postType: DataTypes.STRING,
+            // If this model is updated (not created)
+            if (oldPath) {
+                const treeDiff = this.treeLevel - oldTreeLevel;
+                
+                // Update path for all children
+                await Content.update({
+                    path: sequelize.literal(`CONCAT(${sequelize.escape(this.path)}, SUBSTR(path, ${oldPath.length + 1}))`),
+                    treeLevel: sequelize.literal(`treeLevel ${ treeDiff < 0 ? '-' : '+' } ${sequelize.escape(treeDiff)}`),
+                },{
+                    hooks: false,
+                    transaction: transaction,
+                    where: {
+                        path: {
+                            [Sequelize.Op.startsWith]: oldPath,
+                        }
+                    }
+                });
+            }
+        }
 
-		title: {
-			allowNull: false,
-			type: DataTypes.STRING
-		},
-		
-		slug: {
-			unique: true,
-			allowNull: false,
-			type: DataTypes.STRING
-		},
+        /**
+         * Internal function, used to parse markdown into HTML before
+         * inserting new values into database
+         */
+        parseBodies() {
+            this.bodyAHtml = this.bodyA ? parse(this.bodyA) : null;
+            this.bodyBHtml = this.bodyB ? parse(this.bodyB) : null;
 
-		path: {
-			unique: true,
-			type: DataTypes.TEXT,
-		},
+            if (this.subType === 'single' && this.bodyA) {
+                this.bodyBHtml = htmlExcerp(
+                    this.bodyAHtml,
+                    (Number(env.POST_EXCERP_LENGTH) || 200)
+                );
+            }
+        }
+    }
 
-		authorId: {
-			allowNull: false,
-			type: DataTypes.INTEGER
-		},
+    /**
+     * Defining all the model fields
+     */
+    Content.init({
+        type: {
+            allowNull: false,
+            type: DataTypes.STRING
+        },
 
-		display: {
-			allowNull: false,
-			defaultValue: false,
-			type: DataTypes.BOOLEAN
-		},
+        subType: DataTypes.STRING,
 
-		displayPosts: {
-			allowNull: false,
-			defaultValue: false,
-			type: DataTypes.BOOLEAN
-		},
+        title: {
+            allowNull: false,
+            type: DataTypes.STRING
+        },
+        
+        slug: {
+            unique: true,
+            allowNull: false,
+            type: DataTypes.STRING
+        },
 
-		treeLevel: {
-			allowNull: false,
-			defaultValue: 0,
-			type: DataTypes.INTEGER,
-		},
+        path: {
+            unique: true,
+            type: DataTypes.TEXT,
+        },
 
-		parentId: DataTypes.INTEGER,
-		parentType: DataTypes.STRING,
-		orderField: DataTypes.INTEGER,
+        authorId: {
+            allowNull: false,
+            type: DataTypes.INTEGER
+        },
 
-		bodyA: DataTypes.TEXT,
-		bodyB: DataTypes.TEXT,
-		bodyAHtml: DataTypes.TEXT,
-		bodyBHtml: DataTypes.TEXT
-	}, {
-		sequelize,
-		modelName: 'Content',
-		tableName: 'content',
+        display: {
+            allowNull: false,
+            defaultValue: false,
+            type: DataTypes.BOOLEAN
+        },
 
-		hooks: {
-			beforeCreate: async (content, options) => {
-				await content.setParent(options.transaction);
-				content.parseBodies();
-			},
-			beforeUpdate: async (content, options) => {
-				await content.setParent(options.transaction);
-				content.parseBodies();
-			},
-		}
-	});
-	return Content;
+        displayPosts: {
+            allowNull: false,
+            defaultValue: false,
+            type: DataTypes.BOOLEAN
+        },
+
+        treeLevel: {
+            allowNull: false,
+            defaultValue: 0,
+            type: DataTypes.INTEGER,
+        },
+
+        parentId: DataTypes.INTEGER,
+        parentType: DataTypes.STRING,
+        orderField: DataTypes.INTEGER,
+
+        bodyA: DataTypes.TEXT,
+        bodyB: DataTypes.TEXT,
+        bodyAHtml: DataTypes.TEXT,
+        bodyBHtml: DataTypes.TEXT,
+
+        homePage: {
+            type: DataTypes.VIRTUAL,
+
+            get() {
+                return this.path === 'HOME';
+            },
+
+            set(value) {
+                this.path = (!!value) ? 'HOME' : '';
+            },
+        }
+    }, {
+        sequelize,
+        modelName: 'Content',
+        tableName: 'content',
+
+        /**
+         * Before inserting new data into database, update fields related to
+         * child-parent relationship and parse markdown bodies
+         */
+        hooks: {
+            beforeCreate: async (content, options) => {
+                await content.setParent(options.transaction);
+                content.parseBodies();
+            },
+            beforeUpdate: async (content, options) => {
+                await content.setParent(options.transaction);
+                content.parseBodies();
+            },
+        }
+    });
+
+    return Content;
 };

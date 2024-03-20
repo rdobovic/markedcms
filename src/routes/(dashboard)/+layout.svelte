@@ -10,6 +10,7 @@
 <PageLayout title={data.title} sidebarTitle='Admin dashboard' username={data.username} footer={data.footer}>
     <div slot="header" class="flex gap-2">
         {#if data.username}
+            <NavLink href="/">View Site</NavLink>
             <NavLink href="/admin">Dashboard</NavLink>
             <NavLink href="/logout" method="POST">Logout</NavLink>
         {:else}

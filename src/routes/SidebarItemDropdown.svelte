@@ -39,7 +39,7 @@
             <img 
                 class="w-full" 
                 alt="open" 
-                src={downIcon}
+                src={opened ? upIcon : downIcon}
             />
         </button>
     {/if}

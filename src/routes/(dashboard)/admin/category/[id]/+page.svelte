@@ -79,13 +79,13 @@
         >Author</FormSelect>
 
         <FormSelectSearch
-            name="parentId"
-            options={data.categories}
+            name="parentIdString"
+            options={data.categoryIdStrings}
         >Parent category</FormSelectSearch>
     </FormSection>
 
     {#if $formData.values.hasPage}
-        <FormText 
+        <FormText
             title="Category page"
             name="bodyA"
         ></FormText>

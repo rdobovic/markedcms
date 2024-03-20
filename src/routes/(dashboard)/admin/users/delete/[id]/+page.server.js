@@ -48,7 +48,6 @@ export const actions = {
 
         const leaveToUser = await db.User.findByPk(formData.leaveTo);
         if (!leaveToUser) {
-            console.log("LEAVE TO ERROR");
             return fail(400, {
                 data: formData,
                 errors: { leaveTo: ['You must leave it to someone'] }

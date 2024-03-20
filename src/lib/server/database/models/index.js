@@ -4,6 +4,7 @@ import Sequelize from 'sequelize';
 import setupUser from './user.js';
 import setupOption from './option.js';
 import setupContent from './content.js';
+import setupRootCategory from './rootcategory.js';
 
 import { env } from '$env/dynamic/private';
 import { NODE_ENV } from '$env/static/private';
@@ -58,10 +59,12 @@ export function init() {
     db.User = setupUser(db.sequelize, Sequelize.DataTypes);
     db.Option = setupOption(db.sequelize, Sequelize.DataTypes);
     db.Content = setupContent(db.sequelize, Sequelize.DataTypes);
+    db.RootCategory = setupRootCategory(db.sequelize, Sequelize.DataTypes);
 
     db.User.associate(db);
     db.Option.associate(db);
     db.Content.associate(db);
+    db.RootCategory.associate(db);
 }
 
 // Export all models

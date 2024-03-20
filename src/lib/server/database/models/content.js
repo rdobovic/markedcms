@@ -9,12 +9,6 @@ import htmlExcerp from '$lib/helpers/htmlExcerp';
 export default (sequelize, DataTypes) => {
     class Content extends Model {
 
-        constructor(...options) {
-            super(...options);
-
-            
-        }
-
         /**
          * Helper method for defining associations.
          * This method is not a part of Sequelize lifecycle.
@@ -29,6 +23,9 @@ export default (sequelize, DataTypes) => {
             });
             models.Content.belongsTo(models.Content, {
                 foreignKey: 'parentId'
+            });
+            models.Content.belongsTo(models.RootCategory, {
+                foreignKey: 'rootCategoryId'
             });
         }
 
@@ -78,6 +75,7 @@ export default (sequelize, DataTypes) => {
                 this.treeLevel = parent.treeLevel + 1;
                 this.parentType = parent.type;
                 this.path = `${parent.path}/${this.slug}`;
+                this.rootCategoryId = parent.rootCategoryId;
 
             } else {
                 this.parentId = null;
@@ -94,6 +92,7 @@ export default (sequelize, DataTypes) => {
                 await Content.update({
                     path: sequelize.literal(`CONCAT(${sequelize.escape(this.path)}, SUBSTR(path, ${oldPath.length + 1}))`),
                     treeLevel: sequelize.literal(`treeLevel ${ treeDiff < 0 ? '-' : '+' } ${sequelize.escape(treeDiff)}`),
+                    rootCategoryId: this.rootCategoryId,
                 },{
                     hooks: false,
                     transaction: transaction,
@@ -182,17 +181,7 @@ export default (sequelize, DataTypes) => {
         bodyAHtml: DataTypes.TEXT,
         bodyBHtml: DataTypes.TEXT,
 
-        homePage: {
-            type: DataTypes.VIRTUAL,
-
-            get() {
-                return this.path === 'HOME';
-            },
-
-            set(value) {
-                this.path = (!!value) ? 'HOME' : '';
-            },
-        }
+        rootCategoryId: DataTypes.INTEGER,
     }, {
         sequelize,
         modelName: 'Content',

@@ -30,6 +30,7 @@ const checkAction = async (param) => {
         category: {
             ...category.dataValues,
             hasPage: !!(category.bodyA),
+            parentIdString: category.rootCategoryId + '.' + (category.parentId || 0),
         }
     }
 }
@@ -37,16 +38,28 @@ const checkAction = async (param) => {
 export async function load({ params }) {
     const { action, category } = await checkAction(params.id);
 
-    const categories = (await db.Content.findAll({
+    // Fetch the list of categories
+    const categories = await db.Content.findAll({
         where: {
             type: 'category',
             id: {
-                [db.Sequelize.Op.ne]: category?.id ?? 0
+                [db.Sequelize.Op.ne]: (category?.id ?? 0)
             }
         }
-    })).map(
-        cat => ({ name: cat.title, value: cat.id })
-    );
+    });
+    // Fetch all root categories
+    const rootCategories = await db.RootCategory.findAll({});
+    // Combine categories and roots and map them for dropdown list
+    const categoryIdStrings = [
+        ...rootCategories.map(cat => ({
+            name: cat.displayName,
+            value: cat.id + '.0',
+        })),
+        ...categories.map(cat => ({
+            name: cat.title,
+            value: cat.rootCategoryId + '.' + cat.id,
+        })),
+    ];
 
     // Fetch list of users
     const authors = (await db.User.findAll({ order: [[ 'username', 'ASC' ]] })).map(
@@ -55,7 +68,7 @@ export async function load({ params }) {
 
     return {
         action, category, authors,
-        categories: [ { name: 'Root category', value: 0 }, ...categories ],
+        categoryIdStrings: categoryIdStrings,
     }
 }
 
@@ -92,9 +105,13 @@ export const actions = {
                 .transform(val => val === 'on'),
             authorId: z
                 .preprocess((x) => Number(x), z.number().int().nonnegative()),
-            parentId: z
-                .preprocess((x) => Number(x), z.number().int().nonnegative())
-                .transform(x => x == 0 ? null : x),
+            parentIdString: z
+                .string()
+                .regex(/[0-9]+\.[0-9]+/)
+                .transform(cat => ({
+                    rootId: Number(cat.split('.')[0]),
+                    categoryId: Number(cat.split('.')[1]),
+                })),
             bodyA: z
                 .string()
                 .optional(),
@@ -128,10 +145,13 @@ export const actions = {
         const author = await db.User.findByPk(parsed.authorId);
         const parent = await db.Content.findOne({
             where: {
-                id: parsed.parentId,
+                id: parsed.parentIdString.categoryId,
                 type: 'category',
             }
         });
+        // Fetch given root category
+        const rootCategory = await db.RootCategory.findByPk(parsed.parentIdString.rootId);
+        // Find content with the same slug
         const duplicateSlug = await db.Content.findOne({
             where: {
                 slug: parsed.slug,
@@ -141,15 +161,21 @@ export const actions = {
             }
         });
 
+        // Check if root category exists
+        if (!rootCategory)
+            errors.parentIdString = [ 'Invalid root category' ];
         // Check that category and parent id are not equal
-        if (parsed.parentId && category && parsed.parentId === category.id)
-            errors.parentId = [ 'Category cannot be parent to itself' ];
+        if (parsed.parentIdString.categoryId && category && parsed.parentIdString.categoryId === category.id)
+            errors.parentIdString = [ 'Category cannot be parent to itself' ];
         // Check that valid author is specified
         if (!author)
             errors.authorId = [ 'Invalid author try reloading the page' ];
         // Check that if parent id is specified it is valid
-        if (parsed.parentId && !parent)
-            errors.parentId = [ 'Invalid parent try reloading the page' ];
+        if (parsed.parentIdString.categoryId && !parent)
+            errors.parentIdString = [ 'Invalid parent try reloading the page' ];
+        // Check if parent root and given root match
+        if (parent && rootCategory.id !== parent.rootCategoryId)
+            errors.parentIdString = [ 'Invalid parent root combination' ];
         // Check that given URL slug is unique
         if (duplicateSlug)
             errors.slug = [ 'URL slug must be unique' ];
@@ -167,12 +193,16 @@ export const actions = {
 
         parsed.type = 'category';
 
+        parsed.parentId = parent?.id || null;
+        parsed.rootCategoryId = rootCategory.id;
+
         // If we are creating new category create it
         if (action === 'create') {
             const highest = await db.Content.findOne({
                 order: [[ 'orderField', 'DESC' ]],
                 where: {
                     parentId: parsed.parentId,
+                    rootCategoryId: parsed.rootCategoryId,
                 }
             });
 

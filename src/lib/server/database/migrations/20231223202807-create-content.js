@@ -1,7 +1,6 @@
 'use strict';
 
 /** @type {import('sequelize-cli').Migration} */
-
 module.exports = {
 	
 	/**
@@ -39,12 +38,16 @@ module.exports = {
 			},
 			authorId: {
 				allowNull: false,
-				type: Sequelize.INTEGER
+				type: Sequelize.INTEGER,
+				references: {
+					model: 'users',
+					key: 'id',
+				}
 			},
 			display: {
 				allowNull: false,
 				defaultValue: false,
-				type: Sequelize.BOOLEAN
+				type: Sequelize.BOOLEAN,
 			},
 			displayPosts: {
 				allowNull: false,
@@ -56,7 +59,11 @@ module.exports = {
 				type: Sequelize.INTEGER
 			},
 			parentId: {
-				type: Sequelize.INTEGER
+				type: Sequelize.INTEGER,
+				references: {
+					model: 'content',
+					key: 'id',
+				}
 			},
 			parentType: {
 				type: Sequelize.STRING

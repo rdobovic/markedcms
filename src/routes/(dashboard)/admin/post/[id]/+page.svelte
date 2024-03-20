@@ -49,8 +49,6 @@
     { data.action == 'create' ? 'Create new post' : 'Update post' }
 </h1>
 
-{JSON.stringify($formData.errors)}
-
 <Form store={formData}>
     <FormSection
         title="Post options"
@@ -83,8 +81,8 @@
         >Author</FormSelect>
 
         <FormSelectSearch 
-            name="categoryId" 
-            options={data.categories}
+            name="categoryIdString" 
+            options={data.categoryIdStrings}
             disabled={!!$formData.values.parentId}
         >Categories</FormSelectSearch>
 

@@ -85,6 +85,7 @@ export async function PUT({ request }) {
                     order: [[ 'orderField', 'DESC' ]],
                     where: {
                         parentId: content.parentId,
+                        rootCategoryId: content.rootCategoryId,
                     }
                 });
 
@@ -100,6 +101,7 @@ export async function PUT({ request }) {
                         transaction,
                         where: {
                             parentId: content.parentId,
+                            rootCategoryId: content.rootCategoryId,
                             orderField: {
                                 [Op.gt]: content.orderField,
                                 [Op.lte]: content.orderField + command.move,
@@ -123,6 +125,7 @@ export async function PUT({ request }) {
                         transaction,
                         where: {
                             parentId: content.parentId,
+                            rootCategoryId: content.rootCategoryId,
                             orderField: {
                                 [Op.gte]: content.orderField + command.move,
                                 [Op.lt]: content.orderField,

@@ -20,37 +20,33 @@
 </script>
 
 <div class={ $$props.class ?? '' }>
-    <div class="border-gray-400 bg-gray-100 border flex w-full rounded-md items-start min-h-">
-        <Markdown heading="medium" codeBg="dark" html={text} class="flex-grow p-5" />
-
-        <div class="border-l border-b border-gray-400 flex flex-col rounded-bl-md bg-gray-200 mb-8">
-            <a
-                href={url}
-                title="More details on this post"
-                class:rounded-bl={subposts.length <= 0}
-                class="w-12 h-full p-2 block rounded-tr-sm"
-            >
-                <img src={openIcon} alt="Open post" />
-            </a>
+    <div class="border-gray-400 bg-gray-100 border flex w-full rounded-md items-start hover:border-gray-500">
+        <a href={url} class="flex-grow">
+            <Markdown heading="medium" codeBg="dark" html={text} class="flex-grow p-5" />
+        </a>
+        <div class="flex flex-col">
             {#if subposts.length > 0}
-                <button 
-                    on:click={handleOpen} 
-                    class:cursor-not-allowed={!subposts.length}
-                    class="w-12 h-full p-2 block rounded-bl-md border-t border-gray-400"
-                    title={ subposts.length ? 'View similar posts' : 'There are no similar posts' }
-                >
-                    {#if opened}
-                        <img 
-                            src={downIcon} 
-                            alt="Similar posts"
-                        />
-                    {:else}
-                        <img 
-                            src={upIcon} 
-                            alt="No similar posts"
-                        />
-                    {/if}
-                </button>
+                <div class="border-l border-b border-gray-400 flex flex-col rounded-bl-md rounded-tr-md bg-gray-200">
+                    <button 
+                        on:click={handleOpen} 
+                        class:cursor-not-allowed={!subposts.length}
+                        class="w-12 h-full p-2 rounded-bl-md border-gray-400"
+                        title={ subposts.length ? 'View similar posts' : 'There are no similar posts' }
+                    >
+                        {#if opened}
+                            <img 
+                                src={upIcon} 
+                                alt="Similar posts"
+                            />
+                        {:else}
+                            <img 
+                                src={downIcon}
+                                alt="No similar posts"
+                            />
+                        {/if}
+                    </button>
+                </div>
+                <a href={url} class="flex-grow h-5 w-full"><!-- Nothing --></a>
             {/if}
         </div>
     </div>
@@ -58,14 +54,9 @@
     {#if opened}
         <div transition:slide={{ duration: 200 }} class="pl-5 ml-5 mt-4 border-l flex gap-4 flex-col">
             {#each subposts as subpost}
-                <div class="border-gray-400 border flex w-full rounded-md items-start bg-gray-100">
-                    <Markdown codeBg="dark" heading="small" html={subpost.text} class="flex-grow w-0 p-5" />
-                    <a
-                        href={subpost.url}
-                        title="More details on this post"
-                        class="w-12 p-2 flex rounded-tr-md rounded-bl-md border-l border-b border-gray-400 bg-gray-200 mb-8"
-                    >
-                        <img src={openIcon} alt="Open post" />
+                <div class="border-gray-400 border flex w-full rounded-md items-start bg-gray-100 hover:border-gray-500">
+                    <a href={subpost.url} class="flex-grow w-0">
+                        <Markdown codeBg="dark" heading="small" html={subpost.text} class="p-5" />
                     </a>
                 </div>
             {/each}

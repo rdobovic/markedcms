@@ -5,6 +5,7 @@
     export let footer = '';
     export let username = '';
     export let sidebarTitle = '';
+    export let sidebarHidden = false;
 
     let sidebar = false;
 
@@ -26,8 +27,8 @@
             </a>
         </div>
         <div class="flex items-center gap-5">
-            <nav class="hidden md:block">
-                <ul class="flex gap-2">
+            <nav class="hidden md:block overflow-scroll">
+                <ul class="flex gap-4 flex-wrap ">
                     <!-- Header (navbar) content -->
                     <slot name="header" />
                 </ul>
@@ -39,12 +40,12 @@
             {/if} 
         </div>
     </header>
-    <Sidebar bind:open={sidebar} title={sidebarTitle}>
+    <Sidebar bind:open={sidebar} title={sidebarTitle} hidden={sidebarHidden}>
         <!-- Sidebar content -->
         <slot name="sidebar" />
     </Sidebar>
     <div class="flex flex-1 relative w-full">
-        <div class="flex flex-col items-center flex-1 pt-10 md:pl-80 w-full">
+        <div class="flex flex-col items-center flex-1 pt-10 { sidebarHidden ? '' : 'md:pl-80' } w-full transition-all duration-300">
             <div class="w-full max-w-5xl pb-16 p-4 flex-grow">
                 <!-- Page content -->
                 <slot />

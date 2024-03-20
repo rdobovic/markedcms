@@ -68,13 +68,15 @@
         <Button on:click={handleSaveStructure} class="mt-6">Save</Button>
     </div>
 
-    <div class="overflow-x-auto w-full p-4">
-        <ContentItem dummy={true} dummyText="Everything is within this category" item={{
-            type: 'category',
-            title: 'Root category',
-            display: true,
-            children: items,
-        }} />
+    <div class="overflow-x-auto w-full p-4 flex flex-col gap-8">  
+        {#each items as item (item.id)}
+            <ContentItem dummy={true} dummyText="Root category" item={{
+                type: 'category',
+                title: item.title,
+                display: true,
+                children: item.children,
+            }} />
+        {/each}
     </div>
 </div>
 

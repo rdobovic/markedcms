@@ -10,6 +10,7 @@ module.exports = {
     async up (queryInterface, Sequelize) {
         await queryInterface.addColumn('content', 'rootCategoryId', {
             allowNull: false,
+            defaultValue: 1,
             type: Sequelize.INTEGER,
             references: {
                 model: 'rootCategories',

@@ -27,7 +27,7 @@
             </a>
         </div>
         <div class="flex items-center gap-5">
-            <nav class="hidden md:block overflow-scroll">
+            <nav class="hidden md:block">
                 <ul class="flex gap-4 flex-wrap ">
                     <!-- Header (navbar) content -->
                     <slot name="header" />

@@ -33,6 +33,7 @@ export async function load({ params, url }) {
         children = await db.Content.findAllHierarchy({
             raw: true,
             treeRoot: content.id,
+            order: [[ 'orderField', 'ASC' ]],
             where: {
                 type: 'post',
                 path: {

@@ -1,5 +1,6 @@
 <script>
     import Post from '$lib/components/Post.svelte';
+    import PostPlain from '$lib/components/PostPlain.svelte';
     import Markdown from '$lib/components/Markdown.svelte';
     import DefaultHomePage from './defaultHomePage.svelte';
 
@@ -17,6 +18,8 @@
         );
         return res;
     }
+
+    let PostComponent = data.showPlainPosts ? PostPlain : Post;
 </script>
 
 {#if data.content.type === 'category'}
@@ -29,17 +32,23 @@
 
     <div class="flex flex-col gap-8">
         {#if data.content.displayPosts}
-            {#each data.children as post}
+            {#each data.children as post, i}
                 {#if post.subType === 'single'}
-                    <Post 
-                        text={post.bodyBHtml} 
+                    <svelte:component
+                        this={PostComponent}
+                        text={post.bodyBHtml}
                         url={post.path}
+                        number={i + 1}
+                        numerate={data.numeratePosts}
                         subposts={mapChildren(post)}
                     />
                 {:else}
-                    <Post 
-                        text={post.bodyAHtml}
+                    <svelte:component
+                        this={PostComponent}
+                        text={post.bodyAHtml} 
                         url={post.path}
+                        number={i + 1}
+                        numerate={data.numeratePosts}
                         subposts={mapChildren(post)}
                     />
                 {/if}
@@ -49,12 +58,19 @@
 {/if}
 
 {#if data.content.type === 'post'}
-    {#if data.content.subType === 'single'}
-        <Markdown html={data.content.bodyAHtml} />
-    {:else}
-        <Markdown html={data.content.bodyAHtml} class="mb-8" />
-        <Markdown html={data.content.bodyBHtml} />
-    {/if}
+    <div class="flex gap-4">
+        {#if data.numeratePosts}
+            <p>{data.postNumber}</p>
+        {/if}
+        <div>
+            {#if data.content.subType === 'single'}
+                <Markdown html={data.content.bodyAHtml} />
+            {:else}
+                <Markdown html={data.content.bodyAHtml} class="mb-8" />
+                <Markdown html={data.content.bodyBHtml} />
+            {/if}
+        </div>
+    </div>
 {/if}
 
 {#if data.defaultHomePage}

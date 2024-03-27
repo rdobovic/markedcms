@@ -71,6 +71,8 @@ const defaults = {
     siteTitle: 'MarkedCMS',
     footerCopyRight: 'Powered by MarkedCMS',
     homePageId: 0,
+    showPlainPosts: false,
+    numeratePosts: false,
 }
 
 export async function initOptions() {

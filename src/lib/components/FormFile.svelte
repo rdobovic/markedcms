@@ -19,8 +19,6 @@
         formStore.setValue(name, '');
 
     const handleChange = (event) => {
-        console.log(event);
-
         formStore.setValue(name, event?.target?.files[0].name || '');
         dispatch('change', event);
     }

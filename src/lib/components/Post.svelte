@@ -9,6 +9,9 @@
     export let url = '';
     export let subposts = [];
 
+    export let number = '';
+    export let numerate = false;
+
     let opened = false;
 
     const handleOpen = () => {
@@ -21,7 +24,10 @@
 
 <div class={ $$props.class ?? '' }>
     <div class="border-gray-400 bg-gray-100 border flex w-full rounded-md items-start hover:border-gray-500">
-        <a href={url} class="flex-grow">
+        <a href={url} class="flex-grow flex">
+            {#if numerate}
+                <p class="pl-5 py-5">{number}.</p>
+            {/if}
             <Markdown heading="medium" codeBg="dark" html={text} class="flex-grow p-5" />
         </a>
         <div class="flex flex-col">
@@ -53,10 +59,13 @@
 
     {#if opened}
         <div transition:slide={{ duration: 200 }} class="pl-5 ml-5 mt-4 border-l flex gap-4 flex-col">
-            {#each subposts as subpost}
+            {#each subposts as subpost, i}
                 <div class="border-gray-400 border flex w-full rounded-md items-start bg-gray-100 hover:border-gray-500">
-                    <a href={subpost.url} class="flex-grow w-0">
-                        <Markdown codeBg="dark" heading="small" html={subpost.text} class="p-5" />
+                    <a href={subpost.url} class="flex-grow w-0 flex">
+                        {#if numerate}
+                            <p class="pl-5 py-5">{number}.{i + 1}.</p>
+                        {/if}
+                        <Markdown codeBg="dark" heading="small" html={subpost.text} class="p-5 flex-grow" />
                     </a>
                 </div>
             {/each}

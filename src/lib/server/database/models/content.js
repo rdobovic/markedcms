@@ -59,6 +59,43 @@ export default (sequelize, DataTypes) => {
         }
 
         /**
+         * Find order identifier for given post (Used for post display)
+         */
+        async getPostOrder() {
+            if (this.type !== 'post')
+                return 'Not a post';
+
+            let orderNumber = '';
+            if (this.parentId && this.parentType === 'post') {
+
+                const parent = await Content.findByPk(this.parentId);
+                orderNumber += 1 + (await Content.count({
+                    type: 'post',
+                    parentId: parent.parentId,
+                    rootCategoryId: parent.rootCategoryId,
+                    orderField: {
+                        [Sequelize.Op.lt]: parent.orderField,
+                    }
+                }));
+                
+                orderNumber += '.';
+            }
+
+            orderNumber += 1 + (await Content.count({
+                where: {
+                    type: 'post',
+                    parentId: this.parentId,
+                    rootCategoryId: this.rootCategoryId,
+                    orderField: {
+                        [Sequelize.Op.lt]: this.orderField,
+                    }
+                }
+            }));
+
+            return orderNumber + '.';
+        }
+
+        /**
          * Internal function used to calculate values of fields like tree level
          * and content url before new values are inserted into database
          */

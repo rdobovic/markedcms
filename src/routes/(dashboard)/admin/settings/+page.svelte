@@ -3,6 +3,7 @@
     import FormSection from '$lib/components/FormSection.svelte';
     import FormInput from '$lib/components/FormInput.svelte';
     import FormSelectSearch from '$lib/components/FormSelectSearch.svelte';
+    import FormCheckbox from '$lib/components/FormCheckbox.svelte';
     import { formStore } from '$lib/stores/formStore.js';
 
     export let data;
@@ -37,6 +38,9 @@
             name="homePageId"
             options={data.pages}
         >Home page</FormSelectSearch>
+        
+        <FormCheckbox name="numeratePosts">Numerate posts</FormCheckbox>
+        <FormCheckbox name="showPlainPosts">Show plain posts</FormCheckbox>
     </FormSection>
 </Form>
 

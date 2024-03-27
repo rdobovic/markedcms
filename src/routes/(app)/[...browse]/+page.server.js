@@ -6,19 +6,22 @@ export async function load({ params, url }) {
 
     let content;
 
+    const neededOptions = {
+        numeratePosts: options.numeratePosts,
+        showPlainPosts: options.showPlainPosts,
+    }
+
     if (url.pathname === '/') {
-        content = await db.Content.findByPk(options.homePageId, { 
-            raw: true 
-        });
+        content = await db.Content.findByPk(options.homePageId, {});
 
         if (!content)
             return {
                 content: {},
+                ...neededOptions,
                 defaultHomePage: true,
             }
     } else {
         content = await db.Content.findOne({
-            raw: true,
             where: {
                 path: url.pathname,
             }
@@ -43,8 +46,16 @@ export async function load({ params, url }) {
         });
     }
 
+    let postNumber = '';
+    if (content.type === 'post') {
+        postNumber = await content.getPostOrder();
+    }
+
     return {
-        content, children, 
+        ...neededOptions,
+        children, postNumber,
+
+        content: content.dataValues,
         defaultHomePage: false,
     };
 }

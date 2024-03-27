@@ -59,7 +59,7 @@
 
 {#if data.content.type === 'post'}
     <div class="flex gap-4">
-        {#if data.numeratePosts}
+        {#if data.numeratePosts && data.postNumber}
             <p>{data.postNumber}</p>
         {/if}
         <div>

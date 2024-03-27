@@ -77,22 +77,24 @@ export default (sequelize, DataTypes) => {
                         [Sequelize.Op.lt]: parent.orderField,
                     }
                 }));
-                
                 orderNumber += '.';
             }
 
-            orderNumber += 1 + (await Content.count({
-                where: {
-                    type: 'post',
-                    parentId: this.parentId,
-                    rootCategoryId: this.rootCategoryId,
-                    orderField: {
-                        [Sequelize.Op.lt]: this.orderField,
+            if (this.parentId) {
+                orderNumber += 1 + (await Content.count({
+                    where: {
+                        type: 'post',
+                        parentId: this.parentId,
+                        rootCategoryId: this.rootCategoryId,
+                        orderField: {
+                            [Sequelize.Op.lt]: this.orderField,
+                        }
                     }
-                }
-            }));
+                }));
+                orderNumber += '.';
+            }
 
-            return orderNumber + '.';
+            return orderNumber;
         }
 
         /**

@@ -21,6 +21,7 @@
 
 <form
     {method} {action}
+    enctype="multipart/form-data"
     
     use:enhance={() => {
         return async ({ update, result }) => {

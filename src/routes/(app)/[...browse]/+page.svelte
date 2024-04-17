@@ -58,11 +58,11 @@
 {/if}
 
 {#if data.content.type === 'post'}
-    <div class="flex gap-4">
+    <div class="flex flex-grow gap-4">
         {#if data.numeratePosts && data.postNumber}
             <p>{data.postNumber}</p>
         {/if}
-        <div>
+        <div class="flex-grow">
             {#if data.content.subType === 'single'}
                 <Markdown html={data.content.bodyAHtml} />
             {:else}

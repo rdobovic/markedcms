@@ -4,17 +4,25 @@ import { building } from '$app/environment';
 import { redirect } from '@sveltejs/kit';
 import { initOptions } from '$lib/server/options.js'
 
-// Run startup/initialization code
-if (!building) {
-    (async () => {
+let initDone = false;
 
-        init();              // Init DB
-        await initOptions(); // Init Options
-        
-    })();
+// Run sync init
+if (!building) {
+    init(); // Init database
+}
+
+// Run async init
+const doInit = async () => {
+    initDone = true;
+    console.log(">>>>>>>> HERE <<<<<<<<<");
+    await initOptions(); // Init global options
 }
 
 export async function handle({ event, resolve }) {
+
+    if (!initDone) {
+        await doInit();
+    }
 
     const token = event.cookies.get('token');
 

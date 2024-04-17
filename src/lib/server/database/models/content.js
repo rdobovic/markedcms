@@ -67,14 +67,16 @@ export default (sequelize, DataTypes) => {
 
             let orderNumber = '';
             if (this.parentId && this.parentType === 'post') {
-
                 const parent = await Content.findByPk(this.parentId);
+
                 orderNumber += 1 + (await Content.count({
-                    type: 'post',
-                    parentId: parent.parentId,
-                    rootCategoryId: parent.rootCategoryId,
-                    orderField: {
-                        [Sequelize.Op.lt]: parent.orderField,
+                    where: {
+                        type: 'post',
+                        parentId: parent.parentId,
+                        rootCategoryId: parent.rootCategoryId,
+                        orderField: {
+                            [Sequelize.Op.lt]: parent.orderField,
+                        }
                     }
                 }));
                 orderNumber += '.';

@@ -1,5 +1,6 @@
 import db from '$db';
 import { init } from '$db';
+import { building } from '$app/environment';
 import { redirect } from '@sveltejs/kit';
 import { initOptions } from '$lib/server/options.js'
 
@@ -13,7 +14,6 @@ if (!building) {
 // Run async init
 const doInit = async () => {
     initDone = true;
-    console.log(">>>>>>>> HERE <<<<<<<<<");
     await initOptions(); // Init global options
 }
 

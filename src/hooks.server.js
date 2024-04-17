@@ -1,22 +1,23 @@
 import db from '$db';
 import { init } from '$db';
-import { building } from '$app/environment';
 import { redirect } from '@sveltejs/kit';
 import { initOptions } from '$lib/server/options.js'
 
-// Run startup/initialization code
-if (!building) {
-    (async () => {
+let initDone = false;
 
-        init();              // Init DB
-        await initOptions(); // Init Options
-        
-    })();
+// Run startup/initialization code
+async function appInit() {
+
+    init();              // Init DB
+    await initOptions(); // Init Options
+    initDone = true;
 }
 
 export async function handle({ event, resolve }) {
-
     const token = event.cookies.get('token');
+
+    if (!initDone)
+        await appInit();
 
     if (token) {
         const user = await db.User.findOne({ where: { token } });

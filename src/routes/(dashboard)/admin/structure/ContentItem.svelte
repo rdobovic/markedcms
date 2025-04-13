@@ -76,6 +76,12 @@
     const handleChildDisplay = (e) => {
         runCommand(e.detail);
     }
+
+    let childrenOpen = false;
+
+    const toggleChildren = () => {
+        childrenOpen = !childrenOpen;
+    }
 </script>
 
 <div class="flex flex-col gap-2">
@@ -93,6 +99,7 @@
                 <button
                     on:click={handleDisplayChange}
                     class:cursor-default={dummy}
+                    class="cursor-pointer"
                 >
                     {#if item.display}
                         <img src={eyeOpenedIcon} alt="Displayed" class="w-5">
@@ -100,6 +107,19 @@
                         <img src={eyeClosedIcon} alt="Not displayed" class="w-5">
                     {/if}
                 </button>
+                {#if item.children && item.children.length > 0}
+                    <button
+                        on:click={toggleChildren}
+                        class:cursor-default={dummy}
+                        class="cursor-pointer"
+                    >
+                        {#if childrenOpen}
+                            <img src={downIcon} alt="Displayed" class="w-5">
+                        {:else}
+                            <img src={upIcon} alt="Not displayed" class="w-5">
+                        {/if}
+                    </button>
+                {/if}
             </div>
             <p class="text-sm">
                 {#if !dummy}
@@ -127,7 +147,7 @@
         </div>
     </div>
 
-    {#if item.children && item.children.length > 0}
+    {#if item.children && item.children.length > 0 && childrenOpen}
         <div class="pl-5 ml-5 border-l border-gray-300 flex flex-col gap-2">
             {#each item.children as itm (itm.id)}
                 <div animate:flip={{ duration: 400 }}>

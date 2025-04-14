@@ -26,8 +26,8 @@ mkdir -p /home/markedcms/.config/containers/systemd
 ln -s /home/markedcms/.config/systemd/user/ /home/markedcms/systemd
 ln -s /home/markedcms/.config/containers/systemd/ /home/markedcms/quadlets
 
-# Mariadb backups directory
-mkdir -p /home/markedcms/mariadb_backups
+# Change ownership
+chown -R markedcms:markedcms /home/markedcms
 ```
 
 Once you finish setting up the user switch new user

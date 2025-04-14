@@ -1,0 +1,15 @@
+[Unit]
+Description=MarkedCMS pod - app container
+After=markedcms.mariadb.service
+
+[Container]
+Image=localhost/markedcms_test1
+Pod=markedcms.pod
+
+Environment=ORIGIN=http://localhost:5010
+Environment=PROD_DB_HOST=localhost
+Environment=PROD_DB_PORT=3306
+Environment=PROD_DB_NAME=markedcms
+
+Secret=markedcms.mariadb.username,type=env,target=PROD_DB_USERNAME
+Secret=markedcms.mariadb.password,type=env,target=PROD_DB_PASSWORD

@@ -1,0 +1,11 @@
+[Unit]
+Description=MarkedCMS pod
+
+[Pod]
+PodName=markedcms
+
+# Publish container port host:container
+PublishPort=5010:5000
+
+[Install]
+WantedBy=default.target

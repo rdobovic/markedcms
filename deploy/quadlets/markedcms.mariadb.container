@@ -1,0 +1,14 @@
+[Unit]
+Description=MarkedCMS pod - MariaDB container
+
+[Container]
+Image=docker.io/library/mariadb:latest
+Pod=markedcms.pod
+Volume=markedcms.mariadb.volume:/var/lib/mysql
+
+Environment=MARIADB_DATABASE=markedcms
+
+# Get secrets
+Secret=markedcms.mariadb.username,type=env,target=MARIADB_USER
+Secret=markedcms.mariadb.password,type=env,target=MARIADB_PASSWORD
+Secret=markedcms.mariadb.root_password,type=env,target=MARIADB_ROOT_PASSWORD

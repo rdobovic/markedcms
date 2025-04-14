@@ -36,6 +36,16 @@ Once you finish setting up the user switch new user
 su - markedcms
 ```
 
+## Fix systemd error
+
+Add the following to the end of .bashrc file inside markedcms user's home directory.
+
+```bash
+# Fix systemctl --user DBUS problem
+export XDG_RUNTIME_DIR="/run/user/$UID"
+export DBUS_SESSION_BUS_ADDRESS="unix:path=${XDG_RUNTIME_DIR}/bus"
+```
+
 ## Create podman secrets
 
 We need to create a few podman secrets that will be used as credentials

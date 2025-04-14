@@ -3,10 +3,10 @@ Description=MarkedCMS pod - app container
 After=markedcms.mariadb.service
 
 [Container]
-Image=localhost/markedcms_test1
+Image=docker.io/rdobovic/markedcms
 Pod=markedcms.pod
 
-Environment=ORIGIN=http://localhost:5010
+Environment=ORIGIN=http://www.example.com
 Environment=PROD_DB_HOST=localhost
 Environment=PROD_DB_PORT=3306
 Environment=PROD_DB_NAME=markedcms
